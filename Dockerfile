@@ -22,7 +22,7 @@ RUN mvn clean package -DskipTests
 # Stage 2: Run Tomcat
 # ===============================
 # We use Tomcat 10 because you are using 'jakarta.servlet'
-FROM tomcat:10.1-jdk22
+FROM tomcat:10.1-jdk21
 
 # Remove default Tomcat applications (Manager, Docs, etc.)
 RUN rm -rf /usr/local/tomcat/webapps/*
