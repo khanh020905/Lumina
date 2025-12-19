@@ -1,17 +1,39 @@
-# 1. Use an official Tomcat image with JDK 17 (or 21)
-# Make sure to use Tomcat 10+ if you are using 'jakarta.servlet'
+# ===============================
+# Stage 1: Build the Application
+# ===============================
+# We use a Maven image to compile the Java code
+FROM maven:3.9.6-eclipse-temurin-17 AS build
+
+# Set working directory
+WORKDIR /app
+
+# Copy the pom.xml and download dependencies (cache step)
+COPY pom.xml .
+# This step downloads dependencies so they are cached if pom.xml doesn't change
+RUN mvn dependency:go-offline
+
+# Copy the source code
+COPY src ./src
+
+# Build the WAR file (skip tests to speed up deployment)
+RUN mvn clean package -DskipTests
+
+# ===============================
+# Stage 2: Run Tomcat
+# ===============================
+# We use Tomcat 10 because you are using 'jakarta.servlet'
 FROM tomcat:10.1-jdk22
 
-# 2. Remove default Tomcat apps (optional, cleans up the server)
+# Remove default Tomcat applications (Manager, Docs, etc.)
 RUN rm -rf /usr/local/tomcat/webapps/*
 
-# 3. Copy your WAR file to the container
-# CHANGE 'LuminaLearning.war' to the actual name of your built WAR file!
-# Renaming it to 'ROOT.war' makes it the default app (localhost:8080/ instead of localhost:8080/App)
-COPY target/LuminaLearning.war /usr/local/tomcat/webapps/ROOT.war
+# Copy the WAR file from the 'build' stage to the Tomcat webapps folder
+# We rename it to 'ROOT.war' so your app opens at "https://yoursite.com/" 
+# instead of "https://yoursite.com/LuminaLearning"
+COPY --from=build /app/target/*.war /usr/local/tomcat/webapps/ROOT.war
 
-# 4. Expose port 8080
+# Expose port 8080 (Render looks for this)
 EXPOSE 8080
 
-# 5. Start Tomcat
+# Start Tomcat
 CMD ["catalina.sh", "run"]
