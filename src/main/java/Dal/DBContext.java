@@ -10,30 +10,29 @@ public class DBContext {
 
     public DBContext() {
         try {
+            // Retrieve credentials from environment variables (for Render)
             String url = System.getenv("DB_URL");
             String username = System.getenv("DB_USER");
             String password = System.getenv("DB_PASSWORD");
 
+            // Load the PostgreSQL Driver
+            Class.forName("org.postgresql.Driver");
+
             if (url == null || username == null || password == null) {
-                // --- LOCALHOST (SQL Server) ---
-                String dbName = "CourseManagement";
-                String port = "1433";
+                // --- LOCALHOST (PostgreSQL) ---
+                // Default PostgreSQL local port is 5432
+                String dbName = "lumina";
+                String port = "5432"; 
                 String ip = "localhost";
                 
-                // Load SQL Server Driver
-                Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+                // PostgreSQL JDBC URL format
+                String connectionUrl = "jdbc:postgresql://" + ip + ":" + port + "/" + dbName;
                 
-                String connectionUrl = "jdbc:sqlserver://" + ip + ":" + port + 
-                                       ";databaseName=" + dbName + 
-                                       ";encrypt=true;trustServerCertificate=true;";
-                connection = DriverManager.getConnection(connectionUrl, "sa", "123");
+                // Replace "postgres" and "your_password" with your local pgAdmin credentials
+                connection = DriverManager.getConnection(connectionUrl, "postgres", "your_password");
             } else {
-                // --- RENDER (PostgreSQL) ---
-                // Load PostgreSQL Driver
-                Class.forName("org.postgresql.Driver");
-                
-                // Render provides the full URL in the environment variable, 
-                // so we just pass it directly.
+                // --- REMOTE (Render/PostgreSQL) ---
+                // Render environment variables usually provide the correct JDBC string
                 connection = DriverManager.getConnection(url, username, password);
             }
             
