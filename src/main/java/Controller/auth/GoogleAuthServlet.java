@@ -22,13 +22,26 @@ public class GoogleAuthServlet extends HttpServlet {
 
     private final String CLIENT_ID = "922060682286-edvm7r75dkis9a371jpou899uo8n39j4.apps.googleusercontent.com";
     private final String CLIENT_SECRET = "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";
-    private final String REDIRECT_URI = "https://lumina-1-3col.onrender.com/CourseManagement/auth/google/callback";
+    private String REDIRECT_URI;
     private final String SCOPE = "openid email profile";
     private final String OAUTH_PASSWORD_HASH = "OAUTH_LOGIN_ONLY";
     private final String OAUTH_PHONE = "OAUTH_PHONE_ONLY";
 
     private final userDAO d = new userDAO();
     private final CloudinaryConfig cconfig = new CloudinaryConfig();
+
+    @Override
+    public void init() throws ServletException {
+        String envRedirect = System.getenv("REDIRECT_GOOGLE_URL");
+
+        if (envRedirect != null && !envRedirect.isEmpty()) {
+            this.REDIRECT_URI = envRedirect;
+        } else {
+            this.REDIRECT_URI = "http://localhost:8080/CourseManagement/auth/google/callback";
+        }
+
+        System.out.println("Google Auth Servlet initialized with Redirect URI: " + this.REDIRECT_URI);
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -49,7 +62,7 @@ public class GoogleAuthServlet extends HttpServlet {
                 + "&redirect_uri=" + REDIRECT_URI
                 + "&response_type=code"
                 + "&client_id=" + CLIENT_ID
-               // + "&prompt=select_account"
+                // + "&prompt=select_account"
                 + "&access_type=offline";
 
         response.sendRedirect(oauthUrl);
@@ -81,7 +94,7 @@ public class GoogleAuthServlet extends HttpServlet {
                         "folder", "user_uploads",
                         "resource_type", "image"
                 ));
-                
+
                 String getUrl = (String) uploadResult.get("url");
 
                 boolean isCreated = d.createAccount(username, email, OAUTH_PHONE, OAUTH_PASSWORD_HASH, getUrl, null, null);
