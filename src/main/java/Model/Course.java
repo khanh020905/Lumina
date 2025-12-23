@@ -9,14 +9,14 @@ public class Course {
     private double price;
     private int duration;
     private int rating;
-    private int status;
+    private boolean status;
     private Date createdAt;
     private String category, img_url;
 
     public Course() {
     }
 
-    public Course(String courseCode, String title, String description, double price, int duration, int rating, int status, Date createdAt, String category) {
+    public Course(String courseCode, String title, String description, double price, int duration, int rating, boolean status, Date createdAt, String category) {
         this.courseCode = courseCode;
         this.title = title;
         this.description = description;
@@ -84,11 +84,11 @@ public class Course {
         this.rating = rating;
     }
 
-    public int getStatus() {
+    public boolean getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(boolean status) {
         this.status = status;
     }
 

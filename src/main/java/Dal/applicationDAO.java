@@ -8,15 +8,7 @@ import java.sql.SQLException;
 public class applicationDAO extends DBContext {
 
     public void addApplication(int recruitmentId, int userId, String fullName, String email, String phone, String cvUrl) {
-        String sql = "INSERT INTO [dbo].[Application]\n"
-                + "           ([recruitment_id]\n"
-                + "           ,[user_id]\n"
-                + "           ,[full_name]\n"
-                + "           ,[email]\n"
-                + "           ,[phone]\n"
-                + "           ,[cv_url])\n"
-                + "     VALUES\n"
-                + "           (?,?,?,?,?,?)";
+        String sql = "INSERT INTO applications (recruitment_id, user_id, full_name, email, phone, cv_url) VALUES (?,?,?,?,?,?)";
 
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
@@ -34,7 +26,7 @@ public class applicationDAO extends DBContext {
     }
 
     public Application hasUserApplied(int recruitmentId, int userId) {
-        String sql = "SELECT * FROM Application WHERE recruitment_id=? AND user_id=?";
+        String sql = "SELECT * FROM applications WHERE recruitment_id=? AND user_id=?";
 
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
@@ -63,9 +55,7 @@ public class applicationDAO extends DBContext {
 
     public static void main(String[] args) {
         applicationDAO d = new applicationDAO();
-
-        Application a = d.hasUserApplied(1,22);
-        
-        System.out.println(a.getEmail());
+        Application a = d.hasUserApplied(1, 22);
+        if(a != null) System.out.println(a.getEmail());
     }
 }

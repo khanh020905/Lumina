@@ -8,11 +8,11 @@ public class Notification {
     private String type;
     private String buttonText;
     private String buttonUrl;
-    private int isActive;
+    private boolean isActive;
     
     public Notification(){}
 
-    public Notification(int id, String message, String type, String buttonText, String buttonUrl, int isActive) {
+    public Notification(int id, String message, String type, String buttonText, String buttonUrl, boolean isActive) {
         this.id = id;
         this.message = message;
         this.type = type;
@@ -61,11 +61,11 @@ public class Notification {
         this.buttonUrl = buttonUrl;
     }
 
-    public int getIsActive() {
+    public boolean getIsActive() {
         return isActive;
     }
 
-    public void setIsActive(int isActive) {
+    public void setIsActive(boolean isActive) {
         this.isActive = isActive;
     }
     

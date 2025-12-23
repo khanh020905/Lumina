@@ -49,59 +49,46 @@ public class userDAO extends DBContext {
         return null;
     }
 
-    public boolean createAccount(String username, String email, String phone, String hash_password, String userAvt, String bio, String name) {
-        String sql = "INSERT INTO [dbo].[Users]\n"
-                + "           ([username]\n"
-                + "           ,[email]\n"
-                + "           ,[phone]\n"
-                + "           ,[hash_password]\n"
-                + "           ,[role_id]\n"
-                + "           ,[user_avt]\n"
-                + "           ,[bio]\n"
-                + "           ,[full_name]) \n"
-                + "     VALUES\n"
-                + "           (?, ?, ?, ?, ?, ?, ?, ?)";
+    public boolean createAccount(String username, String email, String phone,
+            String hash_password, String userAvt, String bio, String name) {
 
-        String checkUserAvt = null;
+        String sql = """
+        INSERT INTO users
+        (username, email, phone, hash_password, role_id, user_avt, bio, full_name)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """;
 
-        if (userAvt == null || userAvt.isEmpty()) {
-            checkUserAvt = "https://res.cloudinary.com/drbm6gikx/image/upload/v1765421864/user-account-black-and-white-symbol-microsoft_ghl36j.jpg";
-        } else {
-            checkUserAvt = userAvt;
-        }
+        String finalAvt = (userAvt == null || userAvt.isEmpty())
+                ? "https://res.cloudinary.com/drbm6gikx/image/upload/v1765421864/user-account-black-and-white-symbol-microsoft_ghl36j.jpg"
+                : userAvt;
 
-        String checkBio = null;
+        String finalBio = (bio == null || bio.isEmpty())
+                ? "Hello! Welcome to my Profile"
+                : bio;
 
-        if (bio == null || bio.isEmpty()) {
-            checkBio = "Hello! Welcome to my Profile";
-        }
+        String finalName = (name == null || name.isEmpty())
+                ? username
+                : name;
 
-        if (name == null || name.isEmpty()) {
-            name = username;
-        }
-
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, username);
             ps.setString(2, email);
             ps.setString(3, phone);
             ps.setString(4, hash_password);
             ps.setInt(5, 3);
-            ps.setString(6, checkUserAvt);
-            ps.setString(7, checkBio);
-            ps.setString(8, name);
-            ps.execute();
+            ps.setString(6, finalAvt);
+            ps.setString(7, finalBio);
+            ps.setString(8, finalName);
+            ps.executeUpdate();
             return true;
         } catch (SQLException e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
         return false;
     }
 
     public void updateUser(String email, String hash_password) {
-        String sql = "UPDATE [dbo].[Users]\n"
-                + "   SET [hash_password] = ?\n"
-                + "   WHERE email = ?";
+        String sql = "UPDATE Users SET hash_password = ? WHERE email = ?";
 
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
@@ -115,12 +102,7 @@ public class userDAO extends DBContext {
     }
 
     public boolean updateUserSetting(String username, String email, String phoneNumber, String bio, String name) {
-        String sql = "UPDATE [dbo].[Users]\n"
-                + "   SET [username] = ?\n"
-                + "      ,[phone] = ?\n"
-                + "      ,[bio] = ?\n"
-                + "      ,[full_name] = ?\n"
-                + " WHERE email = ?";
+        String sql = "UPDATE Users SET username = ?, phone = ?, bio = ?, full_name = ? WHERE email = ?";
 
         User user = checkAccount(email);
 
@@ -142,9 +124,7 @@ public class userDAO extends DBContext {
 
     //ver anh Khoa
     public void updateAvt(String email, String avt) {
-        String sql = "UPDATE [dbo].[Users]\n"
-                + "   SET [user_avt] = ?\n"
-                + " WHERE email = ?";
+        String sql = "UPDATE Users SET user_avt = ? WHERE email = ?";
 
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
@@ -158,10 +138,9 @@ public class userDAO extends DBContext {
 
     public static void main(String[] args) {
         userDAO d = new userDAO();
-
         User u = d.checkAccount("lenguyenquockhanh57@gmail.com");
-
-        System.out.println(u.getName());
-
+        if (u != null) {
+            System.out.println(u.getName());
+        }
     }
 }

@@ -25,10 +25,6 @@ public class CourseServlet extends HttpServlet {
 
         List<Course> finalResultList = new ArrayList<>();
 
-        // --- LOGIC PRIORITY ---
-        // 1. If Searching: Ignore category, show search results.
-        // 2. If Filtering: Show category results.
-        // 3. Default: Show all.
         if (searchQuery != null && !searchQuery.trim().isEmpty()) {
             finalResultList = d.searchCourse(searchQuery.trim());
 

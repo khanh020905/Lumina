@@ -11,30 +11,15 @@ public class courseDAO extends DBContext {
 
     public List<Course> getCourses() {
         List<Course> list = new ArrayList<>();
-
-        String sql = "SELECT * FROM Course";
-
+        String sql = "SELECT * FROM courses";
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
-
             while (rs.next()) {
-                Course course = new Course();
-                course.setId(rs.getInt("course_id"));
-                course.setCourseCode(rs.getString("course_code"));
-                course.setTitle(rs.getString("title"));
-                course.setDescription(rs.getString("description"));
-                course.setPrice(rs.getInt("price"));
-                course.setDuration(rs.getInt("duration"));
-                course.setRating(rs.getInt("rating"));
-                course.setStatus(rs.getInt("status"));
-                course.setCategory(rs.getString("category"));
-                course.setImg_url(rs.getString("img_url"));
-
+                Course course = mapCourse(rs);
                 list.add(course);
             }
             rs.close();
-
         } catch (SQLException e) {
             System.out.println(e);
         }
@@ -42,7 +27,7 @@ public class courseDAO extends DBContext {
     }
 
     public List<Course> getCourseByCategory(String category) {
-        String sql = "SELECT * FROM Course WHERE category=?";
+        String sql = "SELECT * FROM courses WHERE category=?";
 
         List<Course> list = new ArrayList<>();
 
@@ -59,7 +44,7 @@ public class courseDAO extends DBContext {
                 course.setPrice(rs.getInt("price"));
                 course.setDuration(rs.getInt("duration"));
                 course.setRating(rs.getInt("rating"));
-                course.setStatus(rs.getInt("status"));
+                course.setStatus(rs.getBoolean("status"));
                 course.setCategory(rs.getString("category"));
                 course.setImg_url(rs.getString("img_url"));
 
@@ -75,7 +60,7 @@ public class courseDAO extends DBContext {
     }
 
     public Course getCourseByCode(String courseCode) {
-        String sql = "SELECT * FROM Course WHERE course_code=?";
+        String sql = "SELECT * FROM courses WHERE course_code=?";
 
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
@@ -91,7 +76,7 @@ public class courseDAO extends DBContext {
                 course.setPrice(rs.getInt("price"));
                 course.setDuration(rs.getInt("duration"));
                 course.setRating(rs.getInt("rating"));
-                course.setStatus(rs.getInt("status"));
+                course.setStatus(rs.getBoolean("status"));
                 course.setCategory(rs.getString("category"));
                 course.setImg_url(rs.getString("img_url"));
 
@@ -104,7 +89,7 @@ public class courseDAO extends DBContext {
     }
 
     public Course getCourseById(int id) {
-        String sql = "SELECT * FROM Course WHERE course_id=?";
+        String sql = "SELECT * FROM courses WHERE course_id=?";
 
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
@@ -120,7 +105,7 @@ public class courseDAO extends DBContext {
                 course.setPrice(rs.getInt("price"));
                 course.setDuration(rs.getInt("duration"));
                 course.setRating(rs.getInt("rating"));
-                course.setStatus(rs.getInt("status"));
+                course.setStatus(rs.getBoolean("status"));
                 course.setCategory(rs.getString("category"));
                 course.setImg_url(rs.getString("img_url"));
 
@@ -133,7 +118,7 @@ public class courseDAO extends DBContext {
     }
 
     public List<Course> searchCourse(String keyword) {
-        String sql = "SELECT * FROM Course WHERE course_code LIKE ? OR title LIKE ?";
+        String sql = "SELECT * FROM courses WHERE course_code ILIKE ? OR title ILIKE ?";
         List<Course> courseList = new ArrayList<>();
 
         try {
@@ -145,14 +130,13 @@ public class courseDAO extends DBContext {
 
             while (rs.next()) {
                 Course course = new Course();
-
                 course.setCourseCode(rs.getString("course_code"));
                 course.setTitle(rs.getString("title"));
                 course.setDescription(rs.getString("description"));
                 course.setPrice(rs.getInt("price"));
                 course.setDuration(rs.getInt("duration"));
                 course.setRating(rs.getInt("rating"));
-                course.setStatus(rs.getInt("status"));
+                course.setStatus(rs.getBoolean("status"));
                 course.setCategory(rs.getString("category"));
                 course.setImg_url(rs.getString("img_url"));
                 courseList.add(course);
@@ -165,12 +149,7 @@ public class courseDAO extends DBContext {
     }
 
     public void insertCourseUserBuy(int userId, int courseId, double price) {
-        String sql = "INSERT INTO [dbo].[Enrollment]\n"
-                + "           ([user_id]\n"
-                + "           ,[course_id]\n"
-                + "           ,[price_paid])\n"
-                + "     VALUES\n"
-                + "           (?,?,?)";
+        String sql = "INSERT INTO enrollments (user_id, course_id, price_paid) VALUES (?, ?, ?)";
 
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
@@ -184,11 +163,26 @@ public class courseDAO extends DBContext {
         }
     }
 
+    private Course mapCourse(ResultSet rs) throws SQLException {
+        Course course = new Course();
+        course.setId(rs.getInt("course_id"));
+        course.setCourseCode(rs.getString("course_code"));
+        course.setTitle(rs.getString("title"));
+        course.setDescription(rs.getString("description"));
+        course.setPrice(rs.getInt("price"));
+        course.setDuration(rs.getInt("duration"));
+        course.setRating(rs.getInt("rating"));
+        course.setStatus(rs.getBoolean("status"));
+        course.setCategory(rs.getString("category"));
+        course.setImg_url(rs.getString("img_url"));
+        return course;
+    }
+
     public static void main(String[] args) {
         courseDAO d = new courseDAO();
 
-       Course course = d.getCourseById(1);
-       
-        System.out.println(course.getCourseCode());
+        List<Course> course = d.getCourses();
+
+        System.out.println(course.toArray());
     }
 }
