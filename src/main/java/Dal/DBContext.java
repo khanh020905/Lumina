@@ -10,15 +10,24 @@ public class DBContext {
 
     public DBContext() {
         try {
-            // Edit URL, username, password to authenticate with your MS SQL Server
-// We add 'encrypt=true;trustServerCertificate=true;' to fix SSL errors with new drivers
-            String url = "jdbc:sqlserver://localhost:1433;databaseName=CourseManagement;encrypt=true;trustServerCertificate=true;";
-            String username = "sa";
-            String password = "123";
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+            String url = System.getenv("DB_URL");
+            String username = System.getenv("DB_USER");
+            String password = System.getenv("DB_PASSWORD");
+            String driver = System.getenv("DB_DRIVER");
+
+            if (driver == null || url == null) {
+                throw new RuntimeException("Database environment variables (DB_URL, DB_DRIVER, etc.) are not set!");
+            }
+
+            Class.forName(driver);
+
             connection = DriverManager.getConnection(url, username, password);
+            System.out.println("Database connected successfully using Environment Variables!");
+
         } catch (ClassNotFoundException | SQLException ex) {
-            System.out.println(ex);
+            System.out.println("Connection Error: " + ex.getMessage());
+        } catch (Exception e) {
+            System.out.println("General Error: " + e.getMessage());
         }
     }
 }
