@@ -11,24 +11,24 @@ import org.json.JSONObject;
 
 public class GeminiCall {
 
-    private String API_KEY;
+    private static String API_KEY;
 
-    public void init() {
+    public static void init() {
         String apiKey = System.getenv("GOOGLE_API");
 
         if (apiKey != null || !apiKey.isEmpty()) {
-            this.API_KEY = apiKey;
+            GeminiCall.API_KEY = apiKey;
         } else {
             Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
-            this.API_KEY = dotenv.get("GOOGLE_API");
+            GeminiCall.API_KEY = dotenv.get("GOOGLE_API");
         }
     }
 
-    public final String callGemini(String message) throws Exception {
+    public final static String callGemini(String message) throws Exception {
         init();
         String modelName = "gemma-3-27b-it";
 
-        String urlString = "https://generativelanguage.googleapis.com/v1beta/models/" + modelName + ":generateContent?key=" + this.API_KEY;
+        String urlString = "https://generativelanguage.googleapis.com/v1beta/models/" + modelName + ":generateContent?key=" + GeminiCall.API_KEY;
 
         JSONObject contentPart = new JSONObject();
         contentPart.put("text", message);
