@@ -22,7 +22,7 @@ public class GoogleAuthServlet extends HttpServlet {
 
     private final String CLIENT_ID = "922060682286-edvm7r75dkis9a371jpou899uo8n39j4.apps.googleusercontent.com";
     private final String CLIENT_SECRET = "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";
-    private final String REDIRECT_URI = "http://localhost:8080/CourseManagement/auth/google/callback";
+    private final String REDIRECT_URI = "https://lumina-1-3col.onrender.com/CourseManagement/auth/google/callback";
     private final String SCOPE = "openid email profile";
     private final String OAUTH_PASSWORD_HASH = "OAUTH_LOGIN_ONLY";
     private final String OAUTH_PHONE = "OAUTH_PHONE_ONLY";
