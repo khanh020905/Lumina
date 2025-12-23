@@ -1,5 +1,6 @@
 package Dal;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -7,13 +8,14 @@ import java.sql.SQLException;
 public class DBContext {
 
     protected Connection connection;
+    Dotenv env = Dotenv.load();
 
     public DBContext() {
         try {
-            String url = System.getenv("DB_URL");
-            String username = System.getenv("DB_USER");
-            String password = System.getenv("DB_PASSWORD");
-            String driver = System.getenv("DB_DRIVER");
+            String url = env.get("DB_URL");
+            String username = env.get("DB_USER");
+            String password = env.get("DB_PASSWORD");
+            String driver = env.get("DB_DRIVER");
 
             if (driver == null || url == null) {
                 throw new RuntimeException("Database environment variables (DB_URL, DB_DRIVER, etc.) are not set!");
